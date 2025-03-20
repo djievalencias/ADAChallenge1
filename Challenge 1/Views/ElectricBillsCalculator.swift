@@ -8,62 +8,148 @@
 import SwiftUI
 
 struct ElectricBillsCalculator: View {
+    @State var totalTagihanBerjalan: Int = 0
+    @State var jumlahPenghuni: Int = 1
+    @State var meteranAwal: Double = 0
+    @State var meteranSaatIni: Double = 0
+    @State var budget: Int = 0
+    @State var budgetToKwh: Int = 0
+    @State var totalKwhTerpakai: Int = 0
+    @State var sisaKwh: Int = 0
+    @State var estimasiPemakaian: Int = 0
+    
     var body: some View {
-        VStack {
-            VStack {
+        NavigationStack {
+            VStack(spacing: 16) {
                 Text("Total Tagihan Berjalan")
                     .font(.title)
-                    .padding(.bottom, 4)
-                Text("Rp0")
+                
+                Text("Rp \(totalTagihanBerjalan)")
                     .font(.largeTitle)
-                    .padding(.bottom, 64)
-                VStack(alignment: .leading) {
-                    HStack {
-                        Label("Jumlah Penghuni", systemImage: "person.2")
+                    .fontWeight(.bold)
+                    .foregroundColor(Color("ShadedPink"))
+                
+                Text("Budget to kWh: \(budgetToKwh)")
+                Text("Total kWh Terpakai: \(totalKwhTerpakai)")
+                Text("Sisa kWh: \(sisaKwh)")
+                Text("Estimasi pemakaian: sisa \(estimasiPemakaian) hari")
+                
+                Form {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Section {
+                            Label {
+                                Text("Jumlah Penghuni")
+                                    .foregroundColor(Color("ShadedRed"))
+                            } icon: {
+                                Image(systemName: "person.2")
+                            }
                             .font(.title2)
                             .fontWeight(.semibold)
-                        Spacer()
-                        Picker(selection: /*@START_MENU_TOKEN@*/.constant(1)/*@END_MENU_TOKEN@*/, label: Text("Jumlah Penghuni")) {
-                            /*@START_MENU_TOKEN@*/Text("1").tag(1)/*@END_MENU_TOKEN@*/
-                            /*@START_MENU_TOKEN@*/Text("2").tag(2)/*@END_MENU_TOKEN@*/
+                            
+                            Picker(
+                                selection: $jumlahPenghuni,
+                                label: Text("Jumlah Penghuni"))
+                            {
+                                /*@START_MENU_TOKEN@*/Text("1").tag(1)/*@END_MENU_TOKEN@*/
+                                /*@START_MENU_TOKEN@*/Text("2").tag(2)/*@END_MENU_TOKEN@*/
+                            }
+                            .pickerStyle(.segmented)
+                        }
+                        
+                        
+                        Section {
+                            Label {
+                                Text("Meteran Awal (kWh)")
+                                    .foregroundColor(Color("ShadedRed"))
+                            } icon: {
+                                Image(systemName: "bolt")
+                            }
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                            TextField("Masukkan Meteran Awal dalam kWh", value: $meteranAwal, format: .number)
+                                .textFieldStyle(.roundedBorder)
+                        }
+                        
+                        
+                        Section {
+                            Label {
+                                Text("Meteran Saat Ini (kWh)")
+                                    .foregroundColor(Color("ShadedRed"))
+                            } icon: {
+                                Image(systemName: "bolt.fill")
+                            }
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                           
+                            TextField("Masukkan Meteran Saat Ini dalam kWh", value: $meteranSaatIni, format: .number)
+                                .textFieldStyle(.roundedBorder)
+                        }
+                        
+                        
+                        Section {
+                            Label {
+                                Text("Budget")
+                                    .foregroundColor(Color("ShadedRed"))
+                            } icon: {
+                                Image(systemName: "dollarsign.square")
+                            }
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            
+                            HStack {
+                                Text("Rp").foregroundStyle(.secondary)
+                                TextField("", value: $budget, format: .number)
+                                    .textFieldStyle(.roundedBorder)
+                                Text("/bulan")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        
+                        
+                        Section {
+                            HStack {
+                                Button("Hitung") {
+                                    let electricBills = ElectricBills(
+                                        jumlahPenghuni: jumlahPenghuni,
+                                        meteranAwal: meteranAwal,
+                                        meteranSaatIni: meteranSaatIni,
+                                        budget: budget
+                                    )
+                                    
+                                    totalTagihanBerjalan = electricBills.totalTagihanBerjalan
+                                    totalKwhTerpakai = Int(electricBills.consume.rounded())
+                                    budgetToKwh = electricBills.convertBudgetToKwh
+                                    sisaKwh = electricBills.sisaKwh
+                                    estimasiPemakaian = electricBills.estimasiPemakaian
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .font(.headline)
+                                .disabled(meteranAwal <= 0
+                                          || meteranSaatIni <= 0
+                                          || budget <= 0
+                                          || meteranAwal >= meteranSaatIni
+                                )
+                            }
+                            .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
-                    
-                    Label("Meteran Awal", systemImage: "bolt")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    TextField("Masukkan Meteran Awal", text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant("")/*@END_MENU_TOKEN@*/)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    Label("Meteran Saat Ini", systemImage: "bolt.fill")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    TextField("Masukkan Meteran Saat Ini", text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant("")/*@END_MENU_TOKEN@*/)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    Label("Budget", systemImage: "dollarsign.square")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    HStack {
-                        Text("Rp").foregroundStyle(.secondary)
-                        TextField("", text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant("")/*@END_MENU_TOKEN@*/)
-                            .textFieldStyle(.roundedBorder)
-                        Text("/Bulan")
-                            .foregroundStyle(.secondary)
-                    }
                 }
+                .tint(Color("ShadedPink"))
+                
             }
-            .fontWeight(.bold)
-            .padding(.bottom, 64)
-            
-            Button("Hitung") {
-                /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/ /*@END_MENU_TOKEN@*/
+            .navigationBarTitle("Electric Bills Calculator")
+            .toolbar {
+                Button("Reset") {
+                    self.jumlahPenghuni = 1
+                    self.meteranAwal = 0
+                    self.meteranSaatIni = 0
+                    self.budget = 0
+                    self.totalTagihanBerjalan = 0
+                }
+                .foregroundColor(Color("ShadedPink"))
             }
-            .buttonStyle(.borderedProminent)
-            .font(.headline)
         }
-        .padding()
-       
     }
 }
 
