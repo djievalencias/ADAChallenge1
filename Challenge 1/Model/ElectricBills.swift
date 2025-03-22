@@ -13,6 +13,14 @@ struct ElectricBills: Hashable, Codable {
     var meteranAwal: Double
     var meteranSaatIni: Double
     var budget: Int
+    
+    init(_ jumlahPenghuni: Int, _ meteranAwal: Double, _ meteranSaatIni: Double, _ budget: Int) {
+        self.jumlahPenghuni = jumlahPenghuni
+        self.meteranAwal = meteranAwal
+        self.meteranSaatIni = meteranSaatIni
+        self.budget = budget
+    }
+    
     var demandCharge:Double = 1.3 * 47510 * 1.08
     
     var consume: Double {

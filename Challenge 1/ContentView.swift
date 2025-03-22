@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var userDefaultsManager = UserDefaultsManager.shared
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ElectricBillsCalculator()
+            .environmentObject(userDefaultsManager)
     }
 }
 
