@@ -11,10 +11,10 @@ import Combine
 final class UserDefaultsManager: ObservableObject {
     static let shared = UserDefaultsManager()
     
-    private let defaults = UserDefaults.standard
+    let defaults = UserDefaults.standard
     
     private enum Keys {
-        static let jumlahPenghuni = "jumlahPenghuni"
+        static let tanggal = "tanggal"
         static let meteranAwal = "meteranAwal"
         static let meteranSaatIni = "meteranSaatIni"
         static let budget = "budget"
@@ -26,7 +26,7 @@ final class UserDefaultsManager: ObservableObject {
     }
     
     init() {
-        jumlahPenghuni = defaults.integer(forKey: Keys.jumlahPenghuni)
+        tanggal = defaults.string(forKey: Keys.tanggal) ?? ""
         meteranAwal = defaults.double(forKey: Keys.meteranAwal)
         meteranSaatIni = defaults.double(forKey: Keys.meteranSaatIni)
         budget = defaults.integer(forKey: Keys.budget)
@@ -37,9 +37,9 @@ final class UserDefaultsManager: ObservableObject {
         sisaKwh = defaults.integer(forKey: Keys.sisaKwh)
     }
     
-    @Published var jumlahPenghuni: Int {
+    @Published var tanggal: String {
         didSet {
-            defaults.set(jumlahPenghuni, forKey: Keys.jumlahPenghuni)
+            defaults.set(tanggal, forKey: Keys.tanggal)
         }
     }
     

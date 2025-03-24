@@ -9,13 +9,11 @@ import Foundation
 import SwiftUI
 
 struct ElectricBills: Hashable, Codable {
-    var jumlahPenghuni: Int
     var meteranAwal: Double
     var meteranSaatIni: Double
     var budget: Int
     
-    init(_ jumlahPenghuni: Int, _ meteranAwal: Double, _ meteranSaatIni: Double, _ budget: Int) {
-        self.jumlahPenghuni = jumlahPenghuni
+    init(_ meteranAwal: Double, _ meteranSaatIni: Double, _ budget: Int) {
         self.meteranAwal = meteranAwal
         self.meteranSaatIni = meteranSaatIni
         self.budget = budget
@@ -32,7 +30,7 @@ struct ElectricBills: Hashable, Codable {
     }
     
     var totalTagihanBerjalan: Int {
-        let doubleTotalTagihanBerjalan:Double = (demandCharge + consume * 1262 + pju) / Double(jumlahPenghuni)
+        let doubleTotalTagihanBerjalan:Double = (demandCharge + consume * 1262 + pju)
         return Int(doubleTotalTagihanBerjalan.rounded())
     }
     
@@ -47,6 +45,7 @@ struct ElectricBills: Hashable, Codable {
     }
     
     var estimasiPemakaian: Int {
-        return sisaKwh / 10
+        let doubleEstimasiPemakaian:Double = Double(sisaKwh) / 10
+        return Int(doubleEstimasiPemakaian.rounded())
     }
 }

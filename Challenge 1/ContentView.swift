@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var userDefaultsManager = UserDefaultsManager.shared
     var body: some View {
-        ElectricBillsCalculator()
+        ElectricBillsView()
             .environmentObject(userDefaultsManager)
     }
 }
