@@ -63,16 +63,16 @@ struct ElectricBillsView: View {
                                     .foregroundColor(.font)
                                     .frame(maxWidth: .infinity, alignment: .center)
                                 
-                                if isDataSet() {
-                                    Text("per \(userDefaultsManager.tanggal)")
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.font)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                }
+                                Text("per \(userDefaultsManager.tanggal)")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.font)
+                                    .frame(maxWidth: .infinity, alignment: .center)
                                 
                                 Text("Rp \(userDefaultsManager.totalTagihanBerjalan)")
                                     .font(.system(size: 36, weight: .bold))
                                     .foregroundColor(.biru)
+                                
+                                Text("* Sudah termasuk Abonemen dan Pajak").font(.caption).foregroundStyle(.secondary)
                             }
                             .padding()
                             .frame(maxWidth: .infinity)
@@ -92,7 +92,8 @@ struct ElectricBillsView: View {
                                 if isNearBudget() {
                                     HStack {
                                         Image(systemName: "bolt.trianglebadge.exclamationmark")
-                                            .foregroundColor(.notif3).font(.system(size: 20))
+                                            .foregroundColor(.notif3)
+                                            .font(.system(size: 25))
                                         
                                         Text("Pemakaian listrik anda __hampir melewati budget__ dengan sisa __\(userDefaultsManager.sisaKwh) kWh__ ")
                                             .font(.system(size: 16))
@@ -108,7 +109,7 @@ struct ElectricBillsView: View {
                                 } else {
                                     HStack {
                                         Image(systemName: "bolt.trianglebadge.exclamationmark")
-                                            .foregroundColor(.notif2).font(.system(size: 20))
+                                            .foregroundColor(.notif2).font(.system(size: 25))
                                         
                                         Text("Pemakaian listrik anda __sudah melewati budget__ yang ditentukan")
                                             .font(.system(size: 16))
@@ -126,7 +127,7 @@ struct ElectricBillsView: View {
                             else {
                                 HStack {
                                     Image(systemName: "bolt.trianglebadge.exclamationmark")
-                                        .foregroundColor(.notif1).font(.system(size: 20))
+                                        .foregroundColor(.notif1).font(.system(size: 25))
                                     
                                     Text("Dengan sisa __\(userDefaultsManager.sisaKwh) kWh__, Anda dapat menggunakan listrik selama __\(userDefaultsManager.estimasiPemakaian) Hari__, berdasarkan rata-rata pemakaian 10 kWh/hari di rusun")
                                         .font(.system(size: 16))
@@ -145,7 +146,7 @@ struct ElectricBillsView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Section {
                                 Label {
-                                    Text("Meteran Awal (kWh)")
+                                    Text("Meteran Awal")
                                 } icon: {
                                     Image(systemName: "bolt")
                                 }
@@ -157,6 +158,12 @@ struct ElectricBillsView: View {
                                         .textFieldStyle(.roundedBorder)
                                         .keyboardType(.decimalPad)
                                         .focused($focusedField, equals: .meteranAwal)
+//                                        .onChange(of: meteranAwal) { oldValue, newValue in
+//                                            let filtered = newValue
+//                                                .filter { $0.isNumber }
+//                                            content = filtered
+//                                            meteranAwal = NumberFormatter.shared.formatNumber(filtered)
+//                                        }
                                     Text("kWh")
                                         .foregroundStyle(.secondary)
                                 }
@@ -165,7 +172,7 @@ struct ElectricBillsView: View {
                             
                             Section {
                                 Label {
-                                    Text("Meteran Saat Ini (kWh)")
+                                    Text("Meteran Saat Ini")
                                 } icon: {
                                     Image(systemName: "bolt.fill")
                                 }
@@ -185,7 +192,7 @@ struct ElectricBillsView: View {
                             
                             Section {
                                 Label {
-                                    Text("Budget per Unit")
+                                    Text("Budget Tagihan Listrik Bulan Ini")
                                 } icon: {
                                     Image(systemName: "dollarsign.square")
                                 }
@@ -291,6 +298,7 @@ struct ElectricBillsView: View {
                 HStack {
                     Image(systemName: icon)
                         .foregroundColor(isOverBudget ? (isNearBudget ? .notif3 : .notif2) : .notif1)
+                        .font(.system(size: 25))
                     Text(value)
                         .font(.custom("SF Pro Rounded", size: 25).weight(.bold))
                         .foregroundColor(isOverBudget ? (isNearBudget ? .notif3 : .notif2) : .notif1)
