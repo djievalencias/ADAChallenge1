@@ -35,10 +35,10 @@ struct ElectricBillsView: View {
         return meteranAwal.isEmpty
         || meteranSaatIni.isEmpty
         || budget.isEmpty
-        || Double(meteranAwal) ?? 0.0 <= 0
-        || Double(meteranSaatIni) ?? 0.0 <= 0
+        || Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0 <= 0
+        || Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0 <= 0
         || Int(budget) ?? 0 <= 67000
-        || Double(meteranAwal) ?? 0.0 >= Double(meteranSaatIni) ?? 0.0
+        || Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0 >= Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0
     }
     
     private func isOverBudget() -> Bool {
@@ -207,8 +207,8 @@ struct ElectricBillsView: View {
                             
                             Button {
                                 let electricBills = ElectricBills(
-                                    Double(meteranAwal) ?? 0.0,
-                                    Double(meteranSaatIni) ?? 0.0,
+                                    Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0,
+                                    Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0,
                                     Int(budget) ?? 0
                                 )
                                 
