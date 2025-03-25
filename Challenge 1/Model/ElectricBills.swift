@@ -21,16 +21,17 @@ struct ElectricBills: Hashable, Codable {
     
     var demandCharge:Double = 1.3 * 47510 * 1.08
     
-    var consume: Double {
-        meteranSaatIni - meteranAwal
+    var consume: Int {
+        let doubleConsume:Double = meteranSaatIni - meteranAwal
+        return Int(doubleConsume.rounded())
     }
 
     var pju: Double {
-        consume * 1262 * 8 / 100
+        Double(consume) * 1262 * 8 / 100
     }
     
     var totalTagihanBerjalan: Int {
-        let doubleTotalTagihanBerjalan:Double = (demandCharge + consume * 1262 + pju)
+        let doubleTotalTagihanBerjalan:Double = (demandCharge + Double(consume) * 1262 + pju)
         return Int(doubleTotalTagihanBerjalan.rounded())
     }
     
@@ -40,8 +41,7 @@ struct ElectricBills: Hashable, Codable {
     }
     
     var sisaKwh: Int {
-        let doubleSisaKwh:Double = Double(convertBudgetToKwh) - consume
-        return Int(doubleSisaKwh.rounded())
+        return convertBudgetToKwh - consume
     }
     
     var estimasiPemakaian: Int {

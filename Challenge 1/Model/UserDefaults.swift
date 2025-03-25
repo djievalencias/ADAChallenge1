@@ -30,7 +30,7 @@ final class UserDefaultsManager: ObservableObject {
         meteranAwal = defaults.double(forKey: Keys.meteranAwal)
         meteranSaatIni = defaults.double(forKey: Keys.meteranSaatIni)
         budget = defaults.integer(forKey: Keys.budget)
-        consume = defaults.double(forKey: Keys.consume)
+        consume = defaults.integer(forKey: Keys.consume)
         totalTagihanBerjalan = defaults.integer(forKey: Keys.totalTagihanBerjalan)
         convertBudgetToKwh = defaults.integer(forKey: Keys.convertBudgetToKwh)
         estimasiPemakaian = defaults.integer(forKey: Keys.estimasiPemakaian)
@@ -61,7 +61,7 @@ final class UserDefaultsManager: ObservableObject {
         }
     }
     
-    @Published var consume: Double {
+    @Published var consume: Int {
         didSet {
             defaults.set(consume, forKey: Keys.consume)
         }
