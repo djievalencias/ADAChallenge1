@@ -13,8 +13,10 @@ struct ElectricBillsView: View {
         case meteranAwal
         case meteranSaatIni
         case budget
+        case tanggalAwal
     }
     
+    @State private var tanggalAwal: Date = Date()
     @State private var meteranAwal: String = ""
     @State private var meteranSaatIni: String = ""
     @State private var budget: String = ""
@@ -26,19 +28,25 @@ struct ElectricBillsView: View {
     }
     
     private func isDataSet() -> Bool {
-        userDefaultsManager.defaults.value (forKey: "meteranAwal") != nil
+        userDefaultsManager.defaults.value (forKey: "tanggalAwal") != nil
+        || userDefaultsManager.defaults.value (forKey: "meteranAwal") != nil
         || userDefaultsManager.defaults.value (forKey: "meteranSaatIni") != nil
         || userDefaultsManager.defaults.value (forKey: "budget") != nil
     }
     
     private func isDisabled() -> Bool {
+        let calendar = Calendar.current
+        
         return meteranAwal.isEmpty
         || meteranSaatIni.isEmpty
         || budget.isEmpty
         || Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0 <= 0
         || Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0 <= 0
         || Int(budget) ?? 0 <= 67000
-        || Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0 >= Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+        || Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+        >= Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0
+        || calendar.startOfDay(for: tanggalAwal) >= calendar.startOfDay(for: Date.now)
+        
     }
     
     private func isOverBudget() -> Bool {
@@ -58,18 +66,18 @@ struct ElectricBillsView: View {
                     VStack(spacing: 20) {
                         if isDataSet() {
                             VStack(spacing: 12) {
-                                Text("Tagihan Listrik Berjalan")
-                                    .font(.system(size: 18, weight: .medium))
+                                Text("Tagihan Listrik")
+                                    .font(.system(size: 20, weight: .medium))
                                     .foregroundColor(.font)
                                     .frame(maxWidth: .infinity, alignment: .center)
                                 
-                                Text("per \(userDefaultsManager.tanggal)")
+                                Text("per \(userDefaultsManager.tanggalAwal.formattedDate()) - \(userDefaultsManager.tanggalSaatIni.formattedDate())")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.font)
                                     .frame(maxWidth: .infinity, alignment: .center)
                                 
                                 Text("Rp \(userDefaultsManager.totalTagihanBerjalan)")
-                                    .font(.system(size: 36, weight: .bold))
+                                    .font(.system(size: 45, weight: .bold))
                                     .foregroundColor(.biru)
                                 
                                 Text("* Sudah termasuk Abonemen dan Pajak").font(.caption).foregroundStyle(.secondary)
@@ -83,8 +91,8 @@ struct ElectricBillsView: View {
                             .id(topID)
                             
                             HStack(spacing: 16) {
-                                StatCard(title: "Batas kWh", value: "\(userDefaultsManager.convertBudgetToKwh) kWh", icon: "bolt.circle", isOverBudget: isOverBudget(), isNearBudget: isNearBudget())
-                                StatCard(title: "Total kWh Terpakai", value: "\(userDefaultsManager.consume) kWh", icon: "bolt.circle", isOverBudget: isOverBudget(), isNearBudget: isNearBudget())
+                                StatCard(title: "Budget dalam kWh", value: "\(userDefaultsManager.convertBudgetToKwh) kWh", icon: "bolt.circle", isOverBudget: isOverBudget(), isNearBudget: isNearBudget())
+                                StatCard(title: "Pemakaian per Hari", value: "\(userDefaultsManager.averageUsage) kWh", icon: "bolt.circle", isOverBudget: isOverBudget(), isNearBudget: isNearBudget())
                             }
                             .padding(.horizontal)
                             
@@ -125,13 +133,24 @@ struct ElectricBillsView: View {
                             }
                             
                             else {
-                                HStack {
-                                    Image(systemName: "bolt.trianglebadge.exclamationmark")
-                                        .foregroundColor(.notif1).font(.system(size: 25))
+                                VStack {
+                                    HStack {
+                                        Image(systemName: "bolt.trianglebadge.exclamationmark")
+                                            .foregroundColor(.notif1).font(.system(size: 25))
+                                        
+                                        Text("Dengan sisa __\(userDefaultsManager.sisaKwh) kWh__, Anda dapat menggunakan listrik selama __\(userDefaultsManager.estimasiPemakaian) Hari__")
+                                            .font(.system(size: 16))
+                                            .foregroundStyle(.notif1)
+                                    }
+                                    .padding(.bottom, 4)
                                     
-                                    Text("Dengan sisa __\(userDefaultsManager.sisaKwh) kWh__, Anda dapat menggunakan listrik selama __\(userDefaultsManager.estimasiPemakaian) Hari__, berdasarkan rata-rata pemakaian 10 kWh/hari di rusun")
-                                        .font(.system(size: 16))
-                                        .foregroundStyle(.notif1)
+                                    HStack {
+                                        //                                        Spacer()
+                                        
+//                                        Text("* Berdasarkan rata-rata pemakaian listrik Anda")
+//                                            .font(.caption)
+//                                            .foregroundStyle(.secondary)
+                                    }
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity)
@@ -146,6 +165,25 @@ struct ElectricBillsView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Section {
                                 Label {
+                                    Text("Tanggal Meteran Awal")
+                                } icon: {
+                                    Image(systemName: "calendar")
+                                }
+                                .fontWeight(.semibold)
+                                .foregroundColor(Color("Biru"))
+                                
+                                DatePicker("", selection: $tanggalAwal,
+                                           displayedComponents: .date
+                                )
+                                .labelsHidden()
+                                
+                                //                                    TextField("Masukkan Tanggal Meteran Awal", text: $tanggalAwal)
+                                //                                        .textFieldStyle(.roundedBorder)
+                                //                                        .focused($focusedField, equals: .tanggalAwal)
+                            }
+                            
+                            Section {
+                                Label {
                                     Text("Meteran Awal")
                                 } icon: {
                                     Image(systemName: "bolt")
@@ -158,12 +196,7 @@ struct ElectricBillsView: View {
                                         .textFieldStyle(.roundedBorder)
                                         .keyboardType(.decimalPad)
                                         .focused($focusedField, equals: .meteranAwal)
-//                                        .onChange(of: meteranAwal) { oldValue, newValue in
-//                                            let filtered = newValue
-//                                                .filter { $0.isNumber }
-//                                            content = filtered
-//                                            meteranAwal = NumberFormatter.shared.formatNumber(filtered)
-//                                        }
+                                    
                                     Text("kWh")
                                         .foregroundStyle(.secondary)
                                 }
@@ -184,7 +217,7 @@ struct ElectricBillsView: View {
                                         .textFieldStyle(.roundedBorder)
                                         .keyboardType(.decimalPad)
                                         .focused($focusedField, equals: .meteranSaatIni)
-                                    Text("kwH")
+                                    Text("kWh")
                                         .foregroundStyle(.secondary)
                                 }
                             }
@@ -192,7 +225,7 @@ struct ElectricBillsView: View {
                             
                             Section {
                                 Label {
-                                    Text("Budget Tagihan Listrik Bulan Ini")
+                                    Text("Budget Tagihan Listrik")
                                 } icon: {
                                     Image(systemName: "dollarsign.square")
                                 }
@@ -205,8 +238,6 @@ struct ElectricBillsView: View {
                                         .textFieldStyle(.roundedBorder)
                                         .keyboardType(.decimalPad)
                                         .focused($focusedField, equals: .budget)
-                                    Text("/bulan")
-                                        .foregroundStyle(.secondary)
                                 }
                                 
                                 Text("Minimal Rp 67.000/bulan").font(.caption).foregroundStyle(.secondary)
@@ -216,10 +247,13 @@ struct ElectricBillsView: View {
                                 let electricBills = ElectricBills(
                                     Double(meteranAwal.replacingOccurrences(of: ",", with: ".")) ?? 0.0,
                                     Double(meteranSaatIni.replacingOccurrences(of: ",", with: ".")) ?? 0.0,
-                                    Int(budget) ?? 0
+                                    Int(budget) ?? 0,
+                                    tanggalAwal,
+                                    Date.now
                                 )
                                 
-                                userDefaultsManager.tanggal = Date.now.formattedDate()
+                                userDefaultsManager.tanggalAwal = tanggalAwal
+                                userDefaultsManager.tanggalSaatIni = Date.now
                                 userDefaultsManager.meteranAwal = Double(meteranAwal) ?? 0.0
                                 userDefaultsManager.meteranSaatIni = Double(meteranSaatIni) ?? 0.0
                                 userDefaultsManager.budget = Int(budget) ?? 0
@@ -230,6 +264,7 @@ struct ElectricBillsView: View {
                                 userDefaultsManager.convertBudgetToKwh = electricBills.convertBudgetToKwh
                                 userDefaultsManager.sisaKwh = electricBills.sisaKwh
                                 userDefaultsManager.estimasiPemakaian = electricBills.estimasiPemakaian
+                                userDefaultsManager.averageUsage = electricBills.averageUsage
                                 
                                 withAnimation {
                                     proxy.scrollTo(topID)
@@ -272,6 +307,7 @@ struct ElectricBillsView: View {
                     }
                     .onAppear {
                         if isDataSet() {
+                            tanggalAwal = userDefaultsManager.tanggalAwal
                             meteranAwal = String(userDefaultsManager.meteranAwal)
                             meteranSaatIni = String(userDefaultsManager.meteranSaatIni)
                             budget = String(userDefaultsManager.budget)

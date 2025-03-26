@@ -14,11 +14,13 @@ final class UserDefaultsManager: ObservableObject {
     let defaults = UserDefaults.standard
     
     private enum Keys {
-        static let tanggal = "tanggal"
+        static let tanggalAwal = "tanggalAwal"
+        static let tanggalSaatIni = "tanggalSaatIni"
         static let meteranAwal = "meteranAwal"
         static let meteranSaatIni = "meteranSaatIni"
         static let budget = "budget"
         static let consume = "consume"
+        static let averageUsage = "averageUsage"
         static let totalTagihanBerjalan = "totalTagihansBerjalan"
         static let convertBudgetToKwh = "convertBudgetToKwh"
         static let sisaKwh = "sisaKwh"
@@ -26,20 +28,36 @@ final class UserDefaultsManager: ObservableObject {
     }
     
     init() {
-        tanggal = defaults.string(forKey: Keys.tanggal) ?? ""
+        if let storedTanggalAwal = defaults.object(forKey: Keys.tanggalAwal) as? Date {
+            tanggalAwal = storedTanggalAwal
+        } else {
+            tanggalAwal = Date()
+        }
+        if let storedTanggalSaatIni = defaults.object(forKey: Keys.tanggalSaatIni) as? Date {
+            tanggalSaatIni = storedTanggalSaatIni
+        } else {
+            tanggalSaatIni = Date()
+        }
         meteranAwal = defaults.double(forKey: Keys.meteranAwal)
         meteranSaatIni = defaults.double(forKey: Keys.meteranSaatIni)
         budget = defaults.integer(forKey: Keys.budget)
         consume = defaults.integer(forKey: Keys.consume)
+        averageUsage = defaults.integer(forKey: Keys.averageUsage)
         totalTagihanBerjalan = defaults.integer(forKey: Keys.totalTagihanBerjalan)
         convertBudgetToKwh = defaults.integer(forKey: Keys.convertBudgetToKwh)
         estimasiPemakaian = defaults.integer(forKey: Keys.estimasiPemakaian)
         sisaKwh = defaults.integer(forKey: Keys.sisaKwh)
     }
     
-    @Published var tanggal: String {
+    @Published var tanggalAwal: Date {
         didSet {
-            defaults.set(tanggal, forKey: Keys.tanggal)
+            defaults.set(tanggalAwal, forKey: Keys.tanggalAwal)
+        }
+    }
+    
+    @Published var tanggalSaatIni: Date {
+        didSet {
+            defaults.set(tanggalSaatIni, forKey: Keys.tanggalSaatIni)
         }
     }
     
@@ -64,6 +82,12 @@ final class UserDefaultsManager: ObservableObject {
     @Published var consume: Int {
         didSet {
             defaults.set(consume, forKey: Keys.consume)
+        }
+    }
+    
+    @Published var averageUsage: Int {
+        didSet {
+            defaults.set(averageUsage, forKey: Keys.averageUsage)
         }
     }
     
