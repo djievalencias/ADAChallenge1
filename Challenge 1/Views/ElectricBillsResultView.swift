@@ -1,5 +1,5 @@
 //
-//  ElectricBillsView.swift
+//  ElectricBillsResultView.swift
 //  Challenge 1
 //
 //  Created by Monica Dewi Seba on 20/03/25.
@@ -8,6 +8,8 @@ import SwiftUI
 
 struct ElectricBillsResultView: View {
     @EnvironmentObject var userDefaultsManager: UserDefaultsManager
+    @Binding var showResultView: Bool
+    @Environment(\.dismiss) var dismiss
     
     private func isNearBudget() -> Bool {
         return userDefaultsManager.estimasiPemakaian <= 3 && userDefaultsManager.estimasiPemakaian > 0
@@ -119,9 +121,9 @@ struct ElectricBillsResultView: View {
                         }
                         
                         
-                        NavigationLink {
-                            ElectricBillsCalculatorView()
-                        } label: {
+                        Button (action: {
+                            dismiss()
+                        }) {
                             Text("Hitung Ulang")
                                 .font(.system(size: 16))
                                 .fontWeight(.bold)
@@ -189,8 +191,9 @@ struct ElectricBillsResultView: View {
     }
 }
 
-#Preview {
-    let userDefaultsManager = UserDefaultsManager()
-    ElectricBillsResultView()
-        .environmentObject(userDefaultsManager)
-}
+//#Preview {
+//    let userDefaultsManager = UserDefaultsManager()
+//    let showResultView = $showResultView
+//    ElectricBillsResultView(showResultView: $showResultView)
+//        .environmentObject(userDefaultsManager)
+//}

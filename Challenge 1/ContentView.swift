@@ -11,13 +11,13 @@ struct ContentView: View {
     @StateObject private var userDefaultsManager = UserDefaultsManager.shared
     
     var body: some View {
-        if userDefaultsManager.isDataSet() {
-            ElectricBillsResultView()
-                .environmentObject(userDefaultsManager)
-        } else {
+//        if userDefaultsManager.isDataSet() {
+//            ElectricBillsResultView()
+//                .environmentObject(userDefaultsManager)
+//        } else {
             ElectricBillsCalculatorView()
                 .environmentObject(userDefaultsManager)
-        }
+//        }
     }
 }
 

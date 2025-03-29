@@ -22,6 +22,8 @@ struct ElectricBillsCalculatorView: View {
     @State private var meteranSaatIni: String = ""
     @State private var budget: String = ""
     
+    @State private var navigateToResult = false
+    
     @FocusState private var focusedField: Field?
     
     private func dismissKeyboard() {
@@ -74,6 +76,8 @@ struct ElectricBillsCalculatorView: View {
         } else if budget.isEmpty {
             focusedField = .budget
         }
+        
+        navigateToResult = true
     }
     
     @Namespace var topID
@@ -161,30 +165,32 @@ struct ElectricBillsCalculatorView: View {
                         Text("Minimal Rp 67.000/bulan").font(.caption).foregroundStyle(.secondary)
                     }
                     
-                    NavigationLink(destination: ElectricBillsResultView()
-                        .onAppear {
-                            hitung()
-                        }) {
-                            Text("Hitung")
-                                .font(.system(size: 16))
-                                .fontWeight(.bold)
-                                .opacity(isDisabled() ? 0.5 : 1)
-                                .foregroundStyle(.white)
-                                .padding(.vertical, 10)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .disabled(isDisabled())
-                        .background(Color("Biru"))
-                        .clipShape(RoundedRectangle(cornerRadius: 13))
+                    Button(action: {
+                        hitung()
+                    }) {
+                        Text("Hitung")
+                            .font(.system(size: 16))
+                            .fontWeight(.bold)
+                            .opacity(isDisabled() ? 0.5 : 1)
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 10)
+                            .frame(maxWidth: .infinity)
+                            .background(Color("Biru"))
+                            .clipShape(RoundedRectangle(cornerRadius: 13))
+                    }
+                    .disabled(isDisabled())
+                    .navigationDestination(isPresented: $navigateToResult) {
+                        ElectricBillsResultView(showResultView: $navigateToResult)
+                    }
                 }
                 .padding()
-                .navigationTitle("Hitung")
+                .navigationTitle("Kalkulator")
                 .toolbar {
                     Button("Reset") {
-                        self.tanggalAwal = Date.now
-                        self.meteranAwal = ""
-                        self.meteranSaatIni = ""
-                        self.budget = ""
+                        tanggalAwal = Date.now
+                        meteranAwal = ""
+                        meteranSaatIni = ""
+                        budget = ""
                     }
                 }
             }
