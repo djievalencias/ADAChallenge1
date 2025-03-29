@@ -9,9 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var userDefaultsManager = UserDefaultsManager.shared
+    
     var body: some View {
-        ElectricBillsView()
-            .environmentObject(userDefaultsManager)
+        if userDefaultsManager.isDataSet() {
+            ElectricBillsResultView()
+                .environmentObject(userDefaultsManager)
+        } else {
+            ElectricBillsCalculatorView()
+                .environmentObject(userDefaultsManager)
+        }
     }
 }
 

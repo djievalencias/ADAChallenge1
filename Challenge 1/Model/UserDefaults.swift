@@ -114,4 +114,11 @@ final class UserDefaultsManager: ObservableObject {
             defaults.set(sisaKwh, forKey: Keys.sisaKwh)
         }
     }
+    
+    func isDataSet() -> Bool {
+        defaults.value (forKey: "tanggalAwal") != nil
+        || defaults.value (forKey: "meteranAwal") != nil
+        || defaults.value (forKey: "meteranSaatIni") != nil
+        || defaults.value (forKey: "budget") != nil
+    }
 }

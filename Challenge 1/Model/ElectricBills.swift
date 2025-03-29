@@ -32,9 +32,7 @@ struct ElectricBills: Hashable, Codable {
     
     var averageUsage: Int {
         let selisihHari = Calendar.current.dateComponents([.day], from: tanggalAwal, to: tanggalSaatIni)
-        print("Selisih Hari: \(selisihHari.day ?? 0)")
         let doubleAverageUsage:Double = Double(consume) / Double(selisihHari.day ?? 1)
-        print("Rata-rata Konsumsi Listrik per Hari: \(doubleAverageUsage)")
         return Int(doubleAverageUsage.rounded())
     }
 
